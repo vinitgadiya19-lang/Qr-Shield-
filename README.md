@@ -1,132 +1,63 @@
-# QR Shield 🛡️
-> Pre-Scan Threat & Phishing Inspector for Students & Everyday UPI Users.
+# QR Shield
 
-**QR Shield** is an open-source, client-side cybersecurity tool built with vanilla HTML5, CSS3, and JavaScript. It helps users inspect QR codes, URLs, and UPI payment payloads **before** trusting them, neutralizing phishing traps, credential theft, and UPI payment frauds.
+**Track:** Cybersecurity and Digital Safety
+**Hackathon:** PromptWars x KickToTech 2026
 
----
+## Problem
+Many students and UPI users in India scan QR codes without checking them.
+Scammers use fake QR codes to send people to phishing links or to trick them
+into making payments. Sometimes We also scan qr codes for wifi without knowing its strength, connectivity which can lead to your data loss.
 
-## ⚡ Key Features
+## Who it is for
+Students ,everyday UPI users, and anybody who scans a QR code in shops, on posters and in messages.
 
-- **Triple Input Mode**:
-  - **Upload Image**: Drag and drop or browse QR code photos/screenshots.
-  - **Live Camera Scanner**: Real-time scanning using web camera video feed (`getUserMedia`).
-  - **Clipboard Paste**: Press `Ctrl + V` anywhere on the page to paste a screenshot or snippet.
-- **Zero-Network Architecture**:
-  - All decoding happens entirely in-browser using local `jsQR.js`.
-  - **The inspected URL is NEVER visited, fetched, or pinged.**
-  - Decoded links are displayed in a secure preview box with safe copy functionality.
-- **Dedicated UPI Payment Handling (`upi://pay`)**:
-  - Shows a neutral blue **Payment QR** verdict (never Danger/red just for being UPI).
-  - Clear guidance: *"This is a UPI payment QR. Scanning it is used to SEND money, never to receive money."*
-  - Prominent reminder: *"Only pay if you trust this person or business. Check that the payee name matches who you expect before entering your UPI PIN."*
-  - Parsed card showing: Payee Name (`pn`), Payee UPI ID (`pa`), Amount (`am`, formatted with ₹), and Note (`tn`). Missing fields show *"Not provided"*.
-  - Pre-filled amount alert: *"This QR asks you to pay ₹X. Make sure that is the amount you expect."*
-  - Yellow "Be careful" note for scam lure keywords (`reward`, `claim`, `lottery`, `refund`, `kyc`) without turning the main verdict red.
-- **WiFi Network Configuration Handling (`WIFI:`)**:
-  - Shows a neutral blue **WiFi QR** verdict (never runs web/URL checks like HTTP, IP address, or domain resolution).
-  - Clear guidance: *"Scanning this QR will connect your phone to this WiFi network. Only join networks you trust, such as your home, college or a place you know."*
-  - Parsed card showing: Network Name (`S`), Security Type (`T`), Hidden status (`H`), and Password (`P`).
-  - Passwords masked by default (`••••••••`) with a "Show password" toggle to avoid accidental screen exposure.
-  - Plain-language security warnings for open networks (`nopass`) and weak legacy protocols (`WEP`).
-- **Explainable Rule-Based Web Heuristics**:
-  - Transparent rule checks for web links with single-sentence plain language explanations:
-    - Insecure HTTP protocol
-    - Numerical IP address as host
-    - URL shorteners concealing destinations
-    - `@` credential obfuscation
-    - Excessive subdomain levels
-    - Punycode & homoglyph spoofing (`xn--`)
-    - Phishing lure keywords
+## What it does
+QR Shield lets you check a QR code before you trust it. You upload an image,
+use your camera, or paste a screenshot. The app reads the QR code and shows:
+- A verdict (Safe, Caution or Danger) with a Threat Level percentage
+- Plain-language reasons for every warning
+- Special handling for UPI payment QR codes (shows payee, amount, and a
+  reminder to only pay if you trust the person)
+- Special handling for WiFi QR codes (warns about open or weak networks)
 
----
+## How the checks work
+All checks run in your browser using simple rules:
+- **HTTP instead of HTTPS**
+- **IP address instead of a domain name**
+- **URL shorteners**
+- **Lookalike (punycode) domains**
+- **Suspicious words** such as login, verify, KYC, reward
+- **UPI links:** reads the payee name, UPI ID and amount from the link
+- **WiFi QR codes:** reads the network name and security type
 
-## 🚀 How to Run
+## How to run
+1. Download or clone this repository.
+2. Open `index.html` in Google Chrome. No installation is needed.
+3. Upload a QR image, use the camera, or paste a screenshot with Ctrl+V.
 
-1. Open File Explorer and navigate to:
-   ```
-   c:\Users\gadiy\Downloads\hackathon
-   ```
-2. Open `index.html` in **Google Chrome** (or any modern browser):
-   - Double-click `index.html`, OR
-   - Run in PowerShell:
-     ```powershell
-     Start-Process "chrome.exe" "index.html"
-     ```
-   - Alternatively, start a local test server:
-     ```bash
-     python -m http.server 8080
-     ```
-     and open `http://localhost:8080` in Chrome.
+## How to test
+Try QR codes that contain these fictional examples:
+- `https://www.wikipedia.org` (Safe)
+- `https://bit.ly/3DemoXyz` (Caution)
+- `http://192.168.10.5/login/verify-kyc` (Danger)
+- `upi://pay?pa=demo.person@fakebank&pn=Demo%20Payee&am=250` (Payment QR)
+- `WIFI:S:Demo-Cafe;T:WPA;P:fakepass123;H:false;;` (WiFi QR)
 
----
+## Limitations
+- This is a rule-based check. It cannot guarantee that a QR code is safe.
+- QR Shield never opens or visits the link, so it cannot check what a website contains.
+- Camera scanning needs browser permission and good lighting.
+- This app cannot prevent each and every type of qr Phishing.
 
-## 📋 Test Checklist: Fictional UPI Payloads
+## Privacy
+The QR code is decoded in your browser. Nothing is uploaded or sent to a server.
+All sample data in this project is fictional.
 
-Test these by pasting with `Ctrl + V` or generating/uploading test QR images:
+## AI tools used
+- Google Antigravity
+- Claude for Reasearch and brainstorming
 
-### 1. Standard Merchant UPI with Amount
-- **Payload**: `upi://pay?pa=demo.shop@fakebank&pn=Demo%20Shop&am=250&cu=INR`
-- **Expected Verdict**: Neutral Blue **Payment QR**
-- **Payee Name (pn)**: `Demo Shop`
-- **Payee UPI ID (pa)**: `demo.shop@fakebank`
-- **Amount (am)**: `₹250`
-- **Note (tn)**: `Not provided`
-- **Pre-filled Amount Info**: *"This QR asks you to pay ₹250. Make sure that is the amount you expect."*
-- **Scam Note**: None
-
-### 2. Peer-to-Peer UPI without Amount
-- **Payload**: `upi://pay?pa=demo.person@fakebank&pn=Demo%20Payee`
-- **Expected Verdict**: Neutral Blue **Payment QR**
-- **Payee Name (pn)**: `Demo Payee`
-- **Payee UPI ID (pa)**: `demo.person@fakebank`
-- **Amount (am)**: `Not provided`
-- **Note (tn)**: `Not provided`
-- **Pre-filled Amount Info**: None (customer enters amount in their UPI app)
-- **Scam Note**: None
-
-### 3. Pre-filled Amount with Suspicious Lure Note
-- **Payload**: `upi://pay?pa=demo.person@fakebank&pn=Demo%20Payee&am=5000&cu=INR&tn=Claim%20reward`
-- **Expected Verdict**: Neutral Blue **Payment QR** (Verdict remains "Payment QR", NOT Danger!)
-- **Payee Name (pn)**: `Demo Payee`
-- **Payee UPI ID (pa)**: `demo.person@fakebank`
-- **Amount (am)**: `₹5000`
-- **Note (tn)**: `Claim reward`
-- **Pre-filled Amount Info**: *"This QR asks you to pay ₹5000. Make sure that is the amount you expect."*
-- **Separate "Be Careful" Note (Yellow)**:  
-  *"⚠️ Be careful: The note or payee name contains words commonly associated with scams (reward, claim). Scammers often promise rewards, refunds, or KYC verification to trick people into sending money."*
-
----
-
-## 📶 Test Checklist: Fictional WiFi Payloads
-
-### 1. Modern WPA Network with Password
-- **Payload**: `WIFI:S:Demo-Cafe;T:WPA;P:fakepass123;H:false;;`
-- **Expected Verdict**: Neutral Blue **WiFi QR**
-- **Network Name (SSID)**: `Demo-Cafe`
-- **Security Type**: `WPA`
-- **Hidden Network**: `No (Visible network)`
-- **Password**: Masked as `••••••••••••` by default with toggle button *"👁️ Show password"* (reveals `fakepass123`)
-- **Guidance**: *"Scanning this QR will connect your phone to this WiFi network. Only join networks you trust, such as your home, college or a place you know."*
-
-### 2. Open Network (No Password)
-- **Payload**: `WIFI:S:Free-Open-WiFi;T:nopass;;`
-- **Expected Verdict**: Neutral Blue **WiFi QR**
-- **Network Name (SSID)**: `Free-Open-WiFi`
-- **Security Type**: `nopass`
-- **Hidden Network**: `No (Visible network)`
-- **Password**: `No password (Open network)`
-- **Warning Callout**: *"⚠️ This network has no password, so other people on it may be able to see your traffic."*
-
-### 3. Legacy Weak Protocol (WEP) & Hidden Network
-- **Payload**: `WIFI:S:OldRouter;T:WEP;P:fakepass123;H:true;;`
-- **Expected Verdict**: Neutral Blue **WiFi QR**
-- **Network Name (SSID)**: `OldRouter`
-- **Security Type**: `WEP`
-- **Hidden Network**: `Yes (Hidden network)`
-- **Password**: Masked as `••••••••••••` with toggle button
-- **Warning Callout**: *"⚠️ WEP is an outdated, weak security type."*
-
----
-
-## 🔒 Heuristic Disclaimer
-*QR Shield uses client-side heuristic pattern checks. While it helps users spot common fraudulent patterns, heuristics cannot guarantee 100% safety. Users should always independently confirm payee identities before entering their UPI PIN.*
+## Originality
+I built this project during the
+hackathon using AI tools to help write the code. I tested it and can explain
+how it works. i have tested this on multiple sample qrs to chech it works and so that my solution satisfies all claims made.
